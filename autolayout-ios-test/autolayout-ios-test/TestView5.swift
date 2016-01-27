@@ -56,7 +56,7 @@ class TestView5Cell : TestView
         self.tk_constraint { make in
             
             make.yPlace(10, iconView, 10)
-            make.width(iconView) == iconView.tk_height
+            make.width(iconView) == AutoLayoutKitAttribute(iconView, .Height)
             
             make.xPlace(10, iconView, 10, titleLabel, make.wall, timeLabel, 10)
             make.ref(titleLabel).xLeft(detailLabel, longDetalLabel)

@@ -12,13 +12,13 @@
 ## 其它布局库的问题
 iOS/OS X 开发中为了适应多种尺寸，会使用 AutoLayout。但系统提供的 AutoLayout API 太难用了，需要一定的封装。
 
-已经有了很多 AutoLayout 的封装库，比如 Objective-C 编写的 [Masonry](https://github.com/SnapKit/Masonry)。Swift 编写的 [Cartography](https://github.com/robb/Cartography)。这些库本身很出色，也很多人使用，相对直接使用系统原生的 API，是一大飞跃。
+已经有了很多 AutoLayout 的封装库，比如 Objective-C 编写的 [Masonry](https://github.com/SnapKit/Masonry)。Swift 编写的 [Cartography](https://github.com/robb/Cartography)。这些库本身很出色。
 
-但这些库用起来还是不够方便，它们的 API 每次调用只配置一两个 view 之间的关系，这点跟原生 API 没有什么本质区别。但事实上我们更关心界面的整体布局。比如下面这种简单的界面：
+只是这些库用起来还是不够方便，它们的 API 每次调用只配置一两个 view 之间的关系，这点跟原生 API 没有什么本质区别。但事实上我们更关心界面的整体布局。比如下面这种简单的界面：
 
 <img alt="example0" src="./images/example0.png"/ width="320">
 
-。使用 Cartography 来写，大致写成：
+使用 Cartography 来写，大致写成：
 	
 ```Swift
 constraint(redView, blueView, yellowView) { red, blue, yellow in 
@@ -45,9 +45,9 @@ constraint(redView, blueView, yellowView) { red, blue, yellow in
 }
 ```
 	
-这个写法已经比 NSLayoutConstraint 好太多了。但假如需要配置更多 view，并且 view 之间的间距并非相同，写起来就很繁琐了。
+这个写法已经比 NSLayoutConstraint 好太多了。但假如需要配置更多 view，并且 view 之间的间距并非相同，写起来就很越来越繁琐了。
 
-AutoLayoutKit 更关心整体布局，一次处理多个 view, 比如上面例子用 AutoLayoutKit 可以写成。
+AutoLayoutKit 更关心整体布局，一次处理多个 view, 上面例子可以写成。
 
 ```Swift
 self.tk_constraint { make in
@@ -59,7 +59,7 @@ self.tk_constraint { make in
 
 <a name="overview"></a>
 ## AutoLayoutKit 概览
-这个库的 API 故意设计成跟另一个库 [LayoutKit](https://github.com/hjcapple/LayoutKit) 相似，LayoutKit 使用 frame 来实现布局。假如你对这个库有兴趣，很可能会对 LayoutKit 也有兴趣。但使用 AutoLayout，在最开始是没有办法知道 View 的大小，也不可能方便地产生等间距的布局。AutoLayoutKit 跟 AutoLayout 相似，但没有布局 bounds 和 flexible 的概念。
+这个库的 API 故意设计成跟另一个库 [LayoutKit](https://github.com/hjcapple/LayoutKit) 相似，LayoutKit 使用 frame 来实现布局。假如你对这个库有兴趣，很可能会对 LayoutKit 也有兴趣。但使用 AutoLayout，在最开始是没有办法知道 View 的大小，也不可能方便地产生等间距的布局。
 
 界面布局，大致分解成 3 步：
 
@@ -77,23 +77,15 @@ API 设计中
 * xLeft、xRight、xCenter、xPlace 等等就是设置 x 方向。
 * yTop、yBottom、yCenter、yPlace 等等就是设置 y 方向。
 
-### 对 NSLayoutConstraint 的简化
-这个库并不想直接封装 NSLayoutConstraint，而是想提供一个更高层次的布局概念，并将 NSLayoutConstraint 的一些功能进行简化。
-
-1. 只使用 NSLayoutConstraint 的 Equal 关系，不支持 LessThanOrEqual、GreaterThanOrEqual。
-2. 不支持 NSLayoutConstraint 的优先级。
-
-这些简化是因为我认为，优先级、LessThanOrEqual、GreaterThanOrEqual，等会引起混乱。
-
 ### 一次设置多个 view
 
-AutoLayoutKit 的特色是一次设置多个 view 之间的关系。比如：
+AutoLayoutKit 的 API 设计成一次设置多个 view 之间的关系。比如：
 
 ```Swift	
 make.xLeft(redView, blueView, yellowView)
 ```
 	
-可以一次将传入的 views 设置成左对齐。最有用的是 xPlace 和 yPlace 函数。比如：
+可以将传入的 views 都设置成靠左。最实用的是 xPlace 和 yPlace 函数。比如：
 
 ```Swift
 make.xPlace(20, redView, make.wall, blueView, 20)
@@ -110,7 +102,7 @@ redView.left == parent.left + 20
 blueView.right == parent.right - 20
 ```
 	
-xPlace 可以连写任意数量的 view 和间距
+xPlace 和 yPlace 可以很直观地连写任意数量的 view 和间距.
 
 ```Swift
 make.xPlace(20, redView, blueView, 30, 30, yellowView, 30)
@@ -127,7 +119,7 @@ yellowView.right == parent.right - 30
 
 <a name="wall"></a>
 ### divider（或者叫墙 wall)
-在 xPlace 中并排连写 view 或者间距，就会很自然地自动产生约束关系，比如
+在 xPlace 中连写 view 或者间距，就会自动产生约束关系，比如
 
 ```Swift
 make.xPlace(20, redView, blueView, 20)
@@ -138,16 +130,14 @@ make.xPlace(20, redView, blueView, 20)
 make.divider
 make.wall
 ```	
-含义是完全一样的。前面提到的例子：
+前面提到的例子：
 
 ```Swift
 make.xPlace(20, redView, make.wall, blueView, 20)
 ```
-产生布局
+redView 和 blueView 被阻隔，因此 redView 跟左边相连，就靠左边；blueView 跟右边相连，就靠右边。产生布局
 
 <img alt="example1" src="./images/example1.png"/ width="320">
-
-因为 redView 和 blueView 被阻隔，因此 redView 就靠左边，blueView 靠右边。
 
 而
 
@@ -155,7 +145,7 @@ make.xPlace(20, redView, make.wall, blueView, 20)
 make.xPlace(make.wall, redView, 20, blueView, 20)
 ```
 
-产生下面整体靠右布局。
+产生整体靠右布局。
 
 <img alt="example2" src="./images/example2.png"/ width="320">
 
@@ -163,7 +153,7 @@ make.xPlace(make.wall, redView, 20, blueView, 20)
 make.xPlace(20, redView, 20, blueView, make.wall)
 ```
 
-产生下面整体靠左布局。
+产生整体靠左布局。
 
 <img alt="example3" src="./images/example3.png"/ width="320">
 
@@ -200,33 +190,41 @@ do {
 
 每次调用 
 
-	self.tk_constraint { make in 
-		xxx
-	}
+```Swift
+self.tk_constraint { make in 
+	xxx
+}
+```
 	
 都会返回一个 Constraint Group，包含所有被安装的约束。比如
 
-	let group = self.tk_constraint { make in 
-		xxx
-	}
+```Swift
+let group = self.tk_constraint { make in 
+	xxx
+}
+```
 
 之后可以调用
 	
-	group.uninstall()
+```Swift
+group.uninstall()
+```
 	
 来删除所有的约束。或者之后替换掉约束，比如。
 
-	class TestView3
-	{
-		private let _group = AutoLayoutKitConstraintGroup()
-		
-	    private func replaceConstraints()
-	    {
-	        self.tk_constraint(replace: _group) { make in
-	        	xxxx
-	        }
-	    }
-	}
+```Swift
+class TestView3
+{
+	private let _group = AutoLayoutKitConstraintGroup()
+	
+    private func replaceConstraints()
+    {
+        self.tk_constraint(replace: _group) { make in
+        	xxxx
+        }
+    }
+}
+```
 	
 这样调用 tk_constraint(replace: xxx), 之前产生的约束会自动被删除。替换上的约束。
 
@@ -239,15 +237,19 @@ LayoutKit 只有一个独立文件，下载之后直接将 AutoLayoutKit/AutoLay
 ## 使用
 调用
 
-	superview.tk_constraint { make in 
-		make.
-	}
+```Swift
+superview.tk_constraint { make in 
+	make.
+}
+```
 	
 或者替换约束
 
-    self.tk_constraint(replace: _group) { make in
-    	xxxx
-    }
+```Swift
+self.tk_constraint(replace: _group) { make in
+	xxxx
+}
+```
     
 <a name="api_desc"></a>
 ## API 描述
@@ -357,7 +359,7 @@ make.wall
 make.wall
 ```
 
-divider 的概念见上文。
+divider 的概念[见上文](#wall)。
 
 ### xLeft, xRight, xCenter
 
@@ -454,4 +456,32 @@ make.equal(redView)
 
 这样，就将 redView 设置成距离边距 20。
 
+### AutoLayoutKitAttribute
+上面提到的 API 已经可以配置绝大部分的布局。但假如有些约束上面 API 表示不了，可以使用更基本的 AutoLayoutKitAttribute。
+
+比如 
+
+	let left = AutoLayoutKitAttribute(leftView, .Left)
+	let right = AutoLayoutKitAttribute(rightView, .Right) - 10
+	make.install(left, right)
+	
+这样就相当于设置了约束。
+
+	leftView.left == rightView.right - 10
+	
+或者你想产生原生的 NSLayoutConstraint。可以写成
+
+	let left = AutoLayoutKitAttribute(leftView, .Left)
+	let right = AutoLayoutKitAttribute(rightView, .Right) - 10
+	let constraint0 = (left == right)
+	let constraint1 = (left >= right)
+	let constraint2 = (left <= right)
+	
+其实也可以扩展 View，支持类似 [Masonry](https://github.com/SnapKit/Masonry) 的写法。
+	
+	leftView.mas_left
+	
+但这样就污染了 View 的名字空间。
+	
+ 
 

@@ -37,26 +37,22 @@ class TestView0 : TestView
         
         let redView    = self.addColorSubView(UIColor.redColor())
         let blueView   = self.addColorSubView(UIColor.blueColor())
-//        let yellowView = self.addColorSubView(UIColor.yellowColor())
-//        let greenView  = self.addColorSubView(UIColor.greenColor())
-//        let purpleView = self.addColorSubView(UIColor.purpleColor())
+        let yellowView = self.addColorSubView(UIColor.yellowColor())
+        let greenView  = self.addColorSubView(UIColor.greenColor())
+        let purpleView = self.addColorSubView(UIColor.purpleColor())
         
         self.tk_constraint { make in
-//            make.insetEdges(edge: self.edge)
-//            
-//            make.size(redView, blueView, yellowView, greenView, purpleView) == (make.w * 0.3, make.h * 0.3)
-//            
-//            make.xLeft(redView, blueView)
-//            make.xRight(yellowView, greenView)
-//            
-//            make.yTop(redView, yellowView)
-//            make.yBottom(blueView, greenView)
-//            
-//            make.center(purpleView)
+            make.insetEdges(edge: self.edge)
             
-            make.size(redView, blueView) == (100, 100)
-            make.xPlace(20, redView, 20, blueView, make.wall)
-            make.yCenter(redView, blueView)
+            make.size(redView, blueView, yellowView, greenView, purpleView) == (make.w * 0.3, make.h * 0.3)
+            
+            make.xLeft(redView, blueView)
+            make.xRight(yellowView, greenView)
+            
+            make.yTop(redView, yellowView)
+            make.yBottom(blueView, greenView)
+            
+            make.center(purpleView)
         }
     }
     
