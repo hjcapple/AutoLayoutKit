@@ -461,21 +461,27 @@ make.equal(redView)
 
 比如 
 
-	let left = AutoLayoutKitAttribute(leftView, .Left)
-	let right = AutoLayoutKitAttribute(rightView, .Right) - 10
-	make.install(left, right)
+```Swift
+let left = AutoLayoutKitAttribute(leftView, .Left)
+let right = AutoLayoutKitAttribute(rightView, .Right) - 10
+make.install(left, right)
+```
 	
 这样就相当于设置了约束。
 
-	leftView.left == rightView.right - 10
+```Swift
+leftView.left == rightView.right - 10
+```
 	
 或者你想产生原生的 NSLayoutConstraint。可以写成
 
-	let left = AutoLayoutKitAttribute(leftView, .Left)
-	let right = AutoLayoutKitAttribute(rightView, .Right) - 10
-	let constraint0 = (left == right)
-	let constraint1 = (left >= right)
-	let constraint2 = (left <= right)
+```Swift
+let left = AutoLayoutKitAttribute(leftView, .Left)
+let right = AutoLayoutKitAttribute(rightView, .Right) - 10
+let constraint0 = (left == right)
+let constraint1 = (left >= right)
+let constraint2 = (left <= right)
+```
 	
 其实也可以扩展 View，支持类似 [Masonry](https://github.com/SnapKit/Masonry) 的写法。
 	
