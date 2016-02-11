@@ -482,12 +482,16 @@ let constraint0 = (left == right)
 let constraint1 = (left >= right)
 let constraint2 = (left <= right)
 ```
+
+另外 AutoLayoutKit-ext.swift 文件中也包含一些扩展，
+
+	leftView.tk_left
 	
-其实也可以扩展 View，支持类似 [Masonry](https://github.com/SnapKit/Masonry) 的写法。
+等价于
+
+	AutoLayoutKitAttribute(leftView, .Left)
 	
-	leftView.mas_left
-	
-但这样就污染了 View 的名字空间。
+将这些简便方法分离到其它文件中，可以选择是否包含到工程。
 	
  
 
