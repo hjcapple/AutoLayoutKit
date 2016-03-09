@@ -51,9 +51,9 @@ public extension AutoLayoutKitView
 }
 
 ///////////////////////////////////////////////////////////////////////
-private struct AutoLayoutKitConstraint
+public struct AutoLayoutKitConstraint
 {
-    weak var view: AutoLayoutKitView?
+    let view: AutoLayoutKitView
     let constraint: NSLayoutConstraint
     
     init(view: AutoLayoutKitView, constraint: NSLayoutConstraint) {
@@ -66,18 +66,16 @@ public class AutoLayoutKitConstraintGroup
 {
     private var _constraints = [AutoLayoutKitConstraint]()
     
-    private func install(view: AutoLayoutKitView, constraint: NSLayoutConstraint)
+    private func addConstraints(constraint: AutoLayoutKitConstraint)
     {
-        let pair = AutoLayoutKitConstraint(view: view, constraint: constraint)
-        view.addConstraint(constraint)
-        _constraints.append(pair)
+        _constraints.append(constraint)
     }
     
     public func uninstall()
     {
         for c in _constraints
         {
-            c.view?.removeConstraint(c.constraint)
+            c.view.removeConstraint(c.constraint)
         }
         _constraints.removeAll()
     }
@@ -131,25 +129,15 @@ public class AutoLayoutKitMaker
         _group = group
     }
     
-    public func install(left: AutoLayoutKitAttribute, _ right: AutoLayoutKitAttribute, relatedBy: NSLayoutRelation = .Equal)
+    public func install(constraint: AutoLayoutKitConstraint?)
     {
-        guard let leftView = left.view else { return }
-        guard let constraint = auto_layout_kit.makeConstraint(left, right: right, relatedBy: relatedBy) else {
-            return
-        }
-        
-        leftView.translatesAutoresizingMaskIntoConstraints = false
-        
-        var view : AutoLayoutKitView!
-        if let rightView = right.view
+        guard let constraint = constraint else { return }
+        if let leftView = constraint.constraint.firstItem as? AutoLayoutKitView
         {
-            view = auto_layout_kit.closestCommonAncestor(leftView, b: rightView)
+            leftView.translatesAutoresizingMaskIntoConstraints = false
         }
-        else
-        {
-            view = leftView
-        }
-        _group.install(view, constraint: constraint)
+        constraint.view.addConstraint(constraint.constraint)
+        _group.addConstraints(constraint)
     }
 }
 
@@ -191,7 +179,7 @@ extension AutoLayoutKitMaker
             {
                 if let lastEdge = lastEdge
                 {
-                    install(AutoLayoutKitAttribute(view, .Left), lastEdge)
+                    install(AutoLayoutKitAttribute(view, .Left) == lastEdge)
                 }
                 lastEdge = AutoLayoutKitAttribute(view, .Right)
             }
@@ -203,7 +191,7 @@ extension AutoLayoutKitMaker
         
         if let lastEdge = lastEdge where lastEdge.view !== _refview
         {
-            install(lastEdge, AutoLayoutKitAttribute(_refview, .Right, -_edges.right))
+            install(lastEdge == AutoLayoutKitAttribute(_refview, .Right, -_edges.right))
         }
     }
     
@@ -227,7 +215,7 @@ extension AutoLayoutKitMaker
             {
                 if let lastEdge = lastEdge
                 {
-                    install(AutoLayoutKitAttribute(view, .Top), lastEdge)
+                    install(AutoLayoutKitAttribute(view, .Top) == lastEdge)
                 }
                 lastEdge = AutoLayoutKitAttribute(view, .Bottom)
             }
@@ -239,7 +227,7 @@ extension AutoLayoutKitMaker
         
         if let lastEdge = lastEdge where lastEdge.view !== _refview
         {
-            install(lastEdge, AutoLayoutKitAttribute(_refview, .Bottom, _edges.bottom))
+            install(lastEdge == AutoLayoutKitAttribute(_refview, .Bottom, _edges.bottom))
         }
     }
     
@@ -268,8 +256,8 @@ extension AutoLayoutKitMaker
         {
             for view in _views
             {
-                _make.install(AutoLayoutKitAttribute(view, .Width), width.autolayoutKit_attribute)
-                _make.install(AutoLayoutKitAttribute(view, .Height), height.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .Width) == width.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .Height) == height.autolayoutKit_attribute)
             }
         }
     }
@@ -314,7 +302,7 @@ extension AutoLayoutKitMaker
         {
             for view in _views
             {
-                _make.install(AutoLayoutKitAttribute(view, .Width), value.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .Width) == value.autolayoutKit_attribute)
             }
         }
         
@@ -323,7 +311,7 @@ extension AutoLayoutKitMaker
             let count = min(_views.count, values.count)
             for i in 0 ..< count
             {
-                _make.install(AutoLayoutKitAttribute(_views[i], .Width), values[i].autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(_views[i], .Width) == values[i].autolayoutKit_attribute)
             }
         }
     }
@@ -368,7 +356,7 @@ extension AutoLayoutKitMaker
         {
             for view in _views
             {
-                _make.install(AutoLayoutKitAttribute(view, .Height), value.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .Height) == value.autolayoutKit_attribute)
             }
         }
         
@@ -377,7 +365,7 @@ extension AutoLayoutKitMaker
             let count = min(_views.count, values.count)
             for i in 0 ..< count
             {
-                _make.install(AutoLayoutKitAttribute(_views[i], .Height), values[i].autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(_views[i], .Height) == values[i].autolayoutKit_attribute)
             }
         }
     }
@@ -412,7 +400,7 @@ extension AutoLayoutKitMaker
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Left), AutoLayoutKitAttribute(_refview, .Left, _edges.left))
+            install(AutoLayoutKitAttribute(view, .Left) == AutoLayoutKitAttribute(_refview, .Left, _edges.left))
         }
     }
     
@@ -430,7 +418,7 @@ extension AutoLayoutKitMaker
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Right), AutoLayoutKitAttribute(_refview, .Right, -_edges.right))
+            install(AutoLayoutKitAttribute(view, .Right) == AutoLayoutKitAttribute(_refview, .Right, -_edges.right))
         }
     }
     
@@ -449,7 +437,7 @@ extension AutoLayoutKitMaker
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Top), AutoLayoutKitAttribute(_refview, .Top, _edges.top))
+            install(AutoLayoutKitAttribute(view, .Top) == AutoLayoutKitAttribute(_refview, .Top, _edges.top))
         }
     }
     
@@ -467,7 +455,7 @@ extension AutoLayoutKitMaker
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Bottom), AutoLayoutKitAttribute(_refview, .Bottom, -_edges.bottom))
+            install(AutoLayoutKitAttribute(view, .Bottom) == AutoLayoutKitAttribute(_refview, .Bottom, -_edges.bottom))
         }
     }
     
@@ -487,7 +475,7 @@ extension AutoLayoutKitMaker
         let offset = (_edges.left - _edges.right) * 0.5
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .CenterX), AutoLayoutKitAttribute(_refview, .CenterX, -offset))
+            install(AutoLayoutKitAttribute(view, .CenterX) == AutoLayoutKitAttribute(_refview, .CenterX, -offset))
         }
     }
     
@@ -506,7 +494,7 @@ extension AutoLayoutKitMaker
         let offset = (_edges.top - _edges.bottom) * 0.5
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .CenterY), AutoLayoutKitAttribute(_refview, .CenterY, -offset))
+            install(AutoLayoutKitAttribute(view, .CenterY) == AutoLayoutKitAttribute(_refview, .CenterY, -offset))
         }
     }
     
@@ -641,17 +629,17 @@ public func - (attribute: AutoLayoutKitAttribute, value: CGFloat) -> AutoLayoutK
     return result
 }
 
-public func == (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> NSLayoutConstraint?
+public func == (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
     return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .Equal)
 }
 
-public func >= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> NSLayoutConstraint?
+public func >= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
     return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .GreaterThanOrEqual)
 }
 
-public func <= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> NSLayoutConstraint?
+public func <= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
     return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .LessThanOrEqual)
 }
@@ -775,7 +763,7 @@ private struct auto_layout_kit
     static private func makeConstraint(
         left: AutoLayoutKitAttribute,
         right: AutoLayoutKitAttribute,
-        relatedBy: NSLayoutRelation) -> NSLayoutConstraint?
+        relatedBy: NSLayoutRelation) -> AutoLayoutKitConstraint?
     {
         // left.multiplier * left + left.constant == right.multiplier * right + right.constant
         // => left = (right.multiplier * right) / left.multiplier + (right.constant - left.constant) / left.multiplier
@@ -790,7 +778,17 @@ private struct auto_layout_kit
             multiplier: right.multiplier / left.multiplier,
             constant: (right.constant - left.constant) / left.multiplier)
         
-        return constraint
+        var view : AutoLayoutKitView!
+        if let rightView = right.view
+        {
+            view = auto_layout_kit.closestCommonAncestor(leftView, b: rightView)
+        }
+        else
+        {
+            view = leftView
+        }
+        
+        return AutoLayoutKitConstraint(view: view, constraint: constraint)
     }
 }
 

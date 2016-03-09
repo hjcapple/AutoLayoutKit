@@ -463,8 +463,8 @@ make.equal(redView)
 
 ```Swift
 let left = AutoLayoutKitAttribute(leftView, .Left)
-let right = AutoLayoutKitAttribute(rightView, .Right) - 10
-make.install(left, right)
+let right = AutoLayoutKitAttribute(rightView, .Right)
+make.install(left == right - 10)
 ```
 	
 这样就相当于设置了约束。
@@ -473,7 +473,7 @@ make.install(left, right)
 leftView.left == rightView.right - 10
 ```
 	
-或者你想产生原生的 NSLayoutConstraint。可以写成
+或者你想产生约束 AutoLayoutKitConstraint。可以写成
 
 ```Swift
 let left = AutoLayoutKitAttribute(leftView, .Left)
@@ -482,6 +482,13 @@ let constraint0 = (left == right)
 let constraint1 = (left >= right)
 let constraint2 = (left <= right)
 ```
+之后使用 
+
+```Swift
+make.install(constraint0)
+```
+
+就可以设置约束。
 
 另外 AutoLayoutKit-ext.swift 文件中也包含一些扩展，
 
