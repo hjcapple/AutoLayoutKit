@@ -752,7 +752,7 @@ private struct auto_layout_kit
     static private func ancestors(v: AutoLayoutKitView) -> AnySequence<AutoLayoutKitView> {
         return AnySequence { () -> AnyGenerator<AutoLayoutKitView> in
             var view: AutoLayoutKitView? = v
-            return anyGenerator {
+            return AnyGenerator {
                 let current = view
                 view = view?.superview
                 return current
