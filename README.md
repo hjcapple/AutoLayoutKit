@@ -231,7 +231,7 @@ class TestView3
 <a name="install"></a>
 ## 安装
 
-LayoutKit 只有一个独立文件，下载之后直接将 AutoLayoutKit/AutoLayoutKit.swift 添加到工程中。
+LayoutKit 只有两个文件，下载之后直接将 AutoLayoutKit 下的代码添加到工程中。
 
 <a name="how_to_use"></a>
 ## 使用

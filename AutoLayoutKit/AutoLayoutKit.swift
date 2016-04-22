@@ -107,19 +107,19 @@ public class AutoLayoutKitMaker
     private var _edges = EdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     private var _group :AutoLayoutKitConstraintGroup
     
-    var divider : AutoLayoutKitDivider {
+    public var divider : AutoLayoutKitDivider {
         return AutoLayoutKitDivider()
     }
     
-    var wall : AutoLayoutKitDivider {
+    public var wall : AutoLayoutKitDivider {
         return self.divider
     }
     
-    var w : AutoLayoutKitAttribute {
+    public var w : AutoLayoutKitAttribute {
         return AutoLayoutKitAttribute(_refview, .Width, -_edges.left - _edges.right)
     }
     
-    var h : AutoLayoutKitAttribute {
+    public var h : AutoLayoutKitAttribute {
         return AutoLayoutKitAttribute(_refview, .Height, -_edges.top - _edges.bottom)
     }
     
