@@ -1,26 +1,26 @@
 /*
-The MIT License (MIT)
-
-Copyright (c) 2016 HJC hjcapple@gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+ The MIT License (MIT)
+ 
+ Copyright (c) 2016 HJC hjcapple@gmail.com
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 import Foundation
 
@@ -35,13 +35,15 @@ import Foundation
 
 public extension AutoLayoutKitView
 {
-    func tk_constraint(@noescape callback:(AutoLayoutKitMaker -> Void)) -> AutoLayoutKitConstraintGroup
+    @discardableResult
+    func tk_constraint(_ callback: ((AutoLayoutKitMaker) -> Void)) -> AutoLayoutKitConstraintGroup
     {
         return tk_constraint(replace: AutoLayoutKitConstraintGroup(), callback: callback)
     }
     
+    @discardableResult
     func tk_constraint(replace group: AutoLayoutKitConstraintGroup,
-        @noescape callback:(AutoLayoutKitMaker -> Void)) -> AutoLayoutKitConstraintGroup
+                       callback: ((AutoLayoutKitMaker) -> Void)) -> AutoLayoutKitConstraintGroup
     {
         group.uninstall()
         let make = AutoLayoutKitMaker(view: self, group: group)
@@ -62,11 +64,11 @@ public struct AutoLayoutKitConstraint
     }
 }
 
-public class AutoLayoutKitConstraintGroup
+public final class AutoLayoutKitConstraintGroup
 {
     private var _constraints = [AutoLayoutKitConstraint]()
     
-    private func addConstraints(constraint: AutoLayoutKitConstraint)
+    fileprivate func addConstraints(_ constraint: AutoLayoutKitConstraint)
     {
         _constraints.append(constraint)
     }
@@ -85,7 +87,7 @@ public class AutoLayoutKitConstraintGroup
     }
 }
 
-public class AutoLayoutKitMaker
+public final class AutoLayoutKitMaker
 {
     public struct EdgeInsets
     {
@@ -103,9 +105,9 @@ public class AutoLayoutKitMaker
         }
     }
     
-    private var _refview  : AutoLayoutKitView
-    private var _edges = EdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    private var _group :AutoLayoutKitConstraintGroup
+    fileprivate var _refview  : AutoLayoutKitView
+    fileprivate var _edges = EdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    fileprivate var _group :AutoLayoutKitConstraintGroup
     
     public var divider : AutoLayoutKitDivider {
         return AutoLayoutKitDivider()
@@ -116,20 +118,20 @@ public class AutoLayoutKitMaker
     }
     
     public var w : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(_refview, .Width, -_edges.left - _edges.right)
+        return AutoLayoutKitAttribute(_refview, .width, -_edges.left - _edges.right)
     }
     
     public var h : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(_refview, .Height, -_edges.top - _edges.bottom)
+        return AutoLayoutKitAttribute(_refview, .height, -_edges.top - _edges.bottom)
     }
     
-    private init(view: AutoLayoutKitView, group: AutoLayoutKitConstraintGroup)
+    fileprivate init(view: AutoLayoutKitView, group: AutoLayoutKitConstraintGroup)
     {
         _refview = view
         _group = group
     }
     
-    public func install(constraint: AutoLayoutKitConstraint?)
+    public func install(_ constraint: AutoLayoutKitConstraint?)
     {
         guard let constraint = constraint else { return }
         if let leftView = constraint.constraint.firstItem as? AutoLayoutKitView
@@ -145,12 +147,13 @@ public class AutoLayoutKitMaker
 // MARK: edges
 extension AutoLayoutKitMaker
 {
-    public func resetEdges(edges: EdgeInsets)
+    public func resetEdges(_ edges: EdgeInsets)
     {
         _edges = edges
     }
     
-    public func insetEdges(top top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) -> EdgeInsets
+    @discardableResult
+    public func insetEdges(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) -> EdgeInsets
     {
         let edges = _edges
         _edges.left += left
@@ -160,7 +163,8 @@ extension AutoLayoutKitMaker
         return edges
     }
     
-    public func insetEdges(edge edge: CGFloat) -> EdgeInsets
+    @discardableResult
+    public func insetEdges(edge: CGFloat) -> EdgeInsets
     {
         return insetEdges(top: edge, left: edge, bottom: edge, right: edge)
     }
@@ -170,18 +174,18 @@ extension AutoLayoutKitMaker
 // MARK: xPlace
 extension AutoLayoutKitMaker
 {
-    func xPlace(items: [AutoLayoutKitEdgeItem])
+    public func xPlace(_ items: [AutoLayoutKitEdgeItem])
     {
-        var lastEdge : AutoLayoutKitAttribute? = AutoLayoutKitAttribute(_refview, .Left, _edges.left)
+        var lastEdge : AutoLayoutKitAttribute? = AutoLayoutKitAttribute(_refview, .left, _edges.left)
         for item in items
         {
             if let view = item.autoLayoutKit_view
             {
                 if let lastEdge = lastEdge
                 {
-                    install(AutoLayoutKitAttribute(view, .Left) == lastEdge)
+                    install(AutoLayoutKitAttribute(view, .left) == lastEdge)
                 }
-                lastEdge = AutoLayoutKitAttribute(view, .Right)
+                lastEdge = AutoLayoutKitAttribute(view, .right)
             }
             else
             {
@@ -189,13 +193,13 @@ extension AutoLayoutKitMaker
             }
         }
         
-        if let lastEdge = lastEdge where lastEdge.view !== _refview
+        if let lastEdge = lastEdge , lastEdge.view !== _refview
         {
-            install(lastEdge == AutoLayoutKitAttribute(_refview, .Right, -_edges.right))
+            install(lastEdge == AutoLayoutKitAttribute(_refview, .right, -_edges.right))
         }
     }
     
-    public func xPlace(items: AutoLayoutKitEdgeItem...)
+    public func xPlace(_ items: AutoLayoutKitEdgeItem...)
     {
         return xPlace(items)
     }
@@ -206,18 +210,18 @@ extension AutoLayoutKitMaker
 // MARK: yPlace
 extension AutoLayoutKitMaker
 {
-    func yPlace(items: [AutoLayoutKitEdgeItem])
+    public func yPlace(_ items: [AutoLayoutKitEdgeItem])
     {
-        var lastEdge : AutoLayoutKitAttribute? = AutoLayoutKitAttribute(_refview, .Top, _edges.top)
+        var lastEdge : AutoLayoutKitAttribute? = AutoLayoutKitAttribute(_refview, .top, _edges.top)
         for item in items
         {
             if let view = item.autoLayoutKit_view
             {
                 if let lastEdge = lastEdge
                 {
-                    install(AutoLayoutKitAttribute(view, .Top) == lastEdge)
+                    install(AutoLayoutKitAttribute(view, .top) == lastEdge)
                 }
-                lastEdge = AutoLayoutKitAttribute(view, .Bottom)
+                lastEdge = AutoLayoutKitAttribute(view, .bottom)
             }
             else
             {
@@ -225,13 +229,13 @@ extension AutoLayoutKitMaker
             }
         }
         
-        if let lastEdge = lastEdge where lastEdge.view !== _refview
+        if let lastEdge = lastEdge , lastEdge.view !== _refview
         {
-            install(lastEdge == AutoLayoutKitAttribute(_refview, .Bottom, _edges.bottom))
+            install(lastEdge == AutoLayoutKitAttribute(_refview, .bottom, _edges.bottom))
         }
     }
     
-    public func yPlace(items: AutoLayoutKitEdgeItem...)
+    public func yPlace(_ items: AutoLayoutKitEdgeItem...)
     {
         return yPlace(items)
     }
@@ -243,31 +247,31 @@ extension AutoLayoutKitMaker
 {
     public struct SizeGroup
     {
-        private let _views : [AutoLayoutKitView]
-        private let _make : AutoLayoutKitMaker
+        fileprivate let _views : [AutoLayoutKitView]
+        fileprivate let _make : AutoLayoutKitMaker
         
-        private init(views: [AutoLayoutKitView], make: AutoLayoutKitMaker)
+        fileprivate init(views: [AutoLayoutKitView], make: AutoLayoutKitMaker)
         {
             _views = views
             _make = make
         }
         
-        private func setValue(width: AutoLayoutKitAttributeItem, height: AutoLayoutKitAttributeItem)
+        fileprivate func setValue(_ width: AutoLayoutKitAttributeItem, height: AutoLayoutKitAttributeItem)
         {
             for view in _views
             {
-                _make.install(AutoLayoutKitAttribute(view, .Width) == width.autolayoutKit_attribute)
-                _make.install(AutoLayoutKitAttribute(view, .Height) == height.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .width) == width.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .height) == height.autolayoutKit_attribute)
             }
         }
     }
     
-    public func size(views: [AutoLayoutKitView]) -> SizeGroup
+    public func size(_ views: [AutoLayoutKitView]) -> SizeGroup
     {
         return SizeGroup(views: views, make: self)
     }
     
-    public func size(views: AutoLayoutKitView...) -> SizeGroup
+    public func size(_ views: AutoLayoutKitView...) -> SizeGroup
     {
         return size(views)
     }
@@ -289,39 +293,39 @@ extension AutoLayoutKitMaker
 {
     public struct WidthGroup
     {
-        private let _views : [AutoLayoutKitView]
-        private let _make : AutoLayoutKitMaker
+        fileprivate let _views : [AutoLayoutKitView]
+        fileprivate let _make : AutoLayoutKitMaker
         
-        private init(views: [AutoLayoutKitView], make: AutoLayoutKitMaker)
+        fileprivate init(views: [AutoLayoutKitView], make: AutoLayoutKitMaker)
         {
             _views = views
             _make = make
         }
         
-        private func setValue(value: AutoLayoutKitAttributeItem)
+        fileprivate func setValue(_ value: AutoLayoutKitAttributeItem)
         {
             for view in _views
             {
-                _make.install(AutoLayoutKitAttribute(view, .Width) == value.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .width) == value.autolayoutKit_attribute)
             }
         }
         
-        private func setValues(values: [AutoLayoutKitAttributeItem])
+        fileprivate func setValues(_ values: [AutoLayoutKitAttributeItem])
         {
             let count = min(_views.count, values.count)
             for i in 0 ..< count
             {
-                _make.install(AutoLayoutKitAttribute(_views[i], .Width) == values[i].autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(_views[i], .width) == values[i].autolayoutKit_attribute)
             }
         }
     }
     
-    public func width(views: [AutoLayoutKitView]) -> WidthGroup
+    public func width(_ views: [AutoLayoutKitView]) -> WidthGroup
     {
         return WidthGroup(views: views, make: self)
     }
     
-    public func width(views: AutoLayoutKitView...) -> WidthGroup
+    public func width(_ views: AutoLayoutKitView...) -> WidthGroup
     {
         return width(views)
     }
@@ -346,36 +350,36 @@ extension AutoLayoutKitMaker
         private let _views : [AutoLayoutKitView]
         private let _make : AutoLayoutKitMaker
         
-        private init(views: [AutoLayoutKitView], make: AutoLayoutKitMaker)
+        fileprivate init(views: [AutoLayoutKitView], make: AutoLayoutKitMaker)
         {
             _views = views
             _make = make
         }
         
-        private func setValue(value: AutoLayoutKitAttributeItem)
+        fileprivate func setValue(_ value: AutoLayoutKitAttributeItem)
         {
             for view in _views
             {
-                _make.install(AutoLayoutKitAttribute(view, .Height) == value.autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(view, .height) == value.autolayoutKit_attribute)
             }
         }
         
-        private func setValues(values: [AutoLayoutKitAttributeItem])
+        fileprivate func setValues(_ values: [AutoLayoutKitAttributeItem])
         {
             let count = min(_views.count, values.count)
             for i in 0 ..< count
             {
-                _make.install(AutoLayoutKitAttribute(_views[i], .Height) == values[i].autolayoutKit_attribute)
+                _make.install(AutoLayoutKitAttribute(_views[i], .height) == values[i].autolayoutKit_attribute)
             }
         }
     }
     
-    public func height(views: [AutoLayoutKitView]) -> HeightGroup
+    public func height(_ views: [AutoLayoutKitView]) -> HeightGroup
     {
         return HeightGroup(views: views, make: self)
     }
     
-    public func height(views: AutoLayoutKitView...) -> HeightGroup
+    public func height(_ views: AutoLayoutKitView...) -> HeightGroup
     {
         return height(views)
     }
@@ -396,15 +400,15 @@ public func == (group: AutoLayoutKitMaker.HeightGroup, values: [AutoLayoutKitAtt
 // MARK: xLeft
 extension AutoLayoutKitMaker
 {
-    public func xLeft(views : [AutoLayoutKitView])
+    public func xLeft(_ views : [AutoLayoutKitView])
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Left) == AutoLayoutKitAttribute(_refview, .Left, _edges.left))
+            install(AutoLayoutKitAttribute(view, .left) == AutoLayoutKitAttribute(_refview, .left, _edges.left))
         }
     }
     
-    public func xLeft(views : AutoLayoutKitView...)
+    public func xLeft(_ views : AutoLayoutKitView...)
     {
         xLeft(views)
     }
@@ -414,15 +418,15 @@ extension AutoLayoutKitMaker
 // MARK: xRight
 extension AutoLayoutKitMaker
 {
-    public func xRight(views : [AutoLayoutKitView])
+    public func xRight(_ views : [AutoLayoutKitView])
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Right) == AutoLayoutKitAttribute(_refview, .Right, -_edges.right))
+            install(AutoLayoutKitAttribute(view, .right) == AutoLayoutKitAttribute(_refview, .right, -_edges.right))
         }
     }
     
-    public func xRight(views : AutoLayoutKitView...)
+    public func xRight(_ views : AutoLayoutKitView...)
     {
         xRight(views)
     }
@@ -433,15 +437,15 @@ extension AutoLayoutKitMaker
 // MARK: yTop
 extension AutoLayoutKitMaker
 {
-    public func yTop(views : [AutoLayoutKitView])
+    public func yTop(_ views : [AutoLayoutKitView])
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Top) == AutoLayoutKitAttribute(_refview, .Top, _edges.top))
+            install(AutoLayoutKitAttribute(view, .top) == AutoLayoutKitAttribute(_refview, .top, _edges.top))
         }
     }
     
-    public func yTop(views : AutoLayoutKitView...)
+    public func yTop(_ views : AutoLayoutKitView...)
     {
         yTop(views)
     }
@@ -451,15 +455,15 @@ extension AutoLayoutKitMaker
 // MARK: yBottom
 extension AutoLayoutKitMaker
 {
-    public func yBottom(views : [AutoLayoutKitView])
+    public func yBottom(_ views : [AutoLayoutKitView])
     {
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .Bottom) == AutoLayoutKitAttribute(_refview, .Bottom, -_edges.bottom))
+            install(AutoLayoutKitAttribute(view, .bottom) == AutoLayoutKitAttribute(_refview, .bottom, -_edges.bottom))
         }
     }
     
-    public func yBottom(views : AutoLayoutKitView...)
+    public func yBottom(_ views : AutoLayoutKitView...)
     {
         yBottom(views)
     }
@@ -470,16 +474,16 @@ extension AutoLayoutKitMaker
 // MARK: xCenter
 extension AutoLayoutKitMaker
 {
-    public func xCenter(views : [AutoLayoutKitView])
+    public func xCenter(_ views : [AutoLayoutKitView])
     {
         let offset = (_edges.left - _edges.right) * 0.5
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .CenterX) == AutoLayoutKitAttribute(_refview, .CenterX, -offset))
+            install(AutoLayoutKitAttribute(view, .centerX) == AutoLayoutKitAttribute(_refview, .centerX, -offset))
         }
     }
     
-    public func xCenter(views : AutoLayoutKitView...)
+    public func xCenter(_ views : AutoLayoutKitView...)
     {
         xCenter(views)
     }
@@ -489,16 +493,16 @@ extension AutoLayoutKitMaker
 // MARK: yCenter
 extension AutoLayoutKitMaker
 {
-    public func yCenter(views: [AutoLayoutKitView])
+    public func yCenter(_ views: [AutoLayoutKitView])
     {
         let offset = (_edges.top - _edges.bottom) * 0.5
         for view in views
         {
-            install(AutoLayoutKitAttribute(view, .CenterY) == AutoLayoutKitAttribute(_refview, .CenterY, -offset))
+            install(AutoLayoutKitAttribute(view, .centerY) == AutoLayoutKitAttribute(_refview, .centerY, -offset))
         }
     }
     
-    public func yCenter(views: AutoLayoutKitView...)
+    public func yCenter(_ views: AutoLayoutKitView...)
     {
         yCenter(views)
     }
@@ -509,13 +513,13 @@ extension AutoLayoutKitMaker
 // MARK: center
 extension AutoLayoutKitMaker
 {
-    public func center(views: [AutoLayoutKitView])
+    public func center(_ views: [AutoLayoutKitView])
     {
         self.xCenter(views)
         self.yCenter(views)
     }
     
-    public func center(views: AutoLayoutKitView...)
+    public func center(_ views: AutoLayoutKitView...)
     {
         center(views)
     }
@@ -525,13 +529,13 @@ extension AutoLayoutKitMaker
 // MARK: xEqual
 extension AutoLayoutKitMaker
 {
-    public func xEqual(views: [AutoLayoutKitView])
+    public func xEqual(_ views: [AutoLayoutKitView])
     {
         self.xLeft(views)
         self.xRight(views)
     }
     
-    public func xEqual(views: AutoLayoutKitView...)
+    public func xEqual(_ views: AutoLayoutKitView...)
     {
         xEqual(views)
     }
@@ -541,13 +545,13 @@ extension AutoLayoutKitMaker
 // MARK: yEqual
 extension AutoLayoutKitMaker
 {
-    public func yEqual(views: [AutoLayoutKitView])
+    public func yEqual(_ views: [AutoLayoutKitView])
     {
         self.yTop(views)
         self.yBottom(views)
     }
     
-    public func yEqual(views: AutoLayoutKitView...)
+    public func yEqual(_ views: AutoLayoutKitView...)
     {
         yEqual(views)
     }
@@ -557,13 +561,13 @@ extension AutoLayoutKitMaker
 // MARK: equal
 extension AutoLayoutKitMaker
 {
-    public func equal(views: [AutoLayoutKitView])
+    public func equal(_ views: [AutoLayoutKitView])
     {
         xEqual(views)
         yEqual(views)
     }
     
-    public func equal(views: AutoLayoutKitView...)
+    public func equal(_ views: AutoLayoutKitView...)
     {
         equal(views)
     }
@@ -573,7 +577,7 @@ extension AutoLayoutKitMaker
 // MARK: ref
 extension AutoLayoutKitMaker
 {
-    public func ref(view: AutoLayoutKitView) -> AutoLayoutKitMaker
+    public func ref(_ view: AutoLayoutKitView) -> AutoLayoutKitMaker
     {
         return AutoLayoutKitMaker(view: view, group: _group)
     }
@@ -582,10 +586,10 @@ extension AutoLayoutKitMaker
 ////////////////////////////////////////////////////////
 public struct AutoLayoutKitAttribute : AutoLayoutKitAttributeItem
 {
-    private var attribute: NSLayoutAttribute
-    private var view: AutoLayoutKitView?
-    private var constant: CGFloat = 0.0
-    private var multiplier: CGFloat = 1.0
+    fileprivate var attribute: NSLayoutAttribute
+    fileprivate var view: AutoLayoutKitView?
+    fileprivate var constant: CGFloat = 0.0
+    fileprivate var multiplier: CGFloat = 1.0
     
     public var autolayoutKit_attribute : AutoLayoutKitAttribute {
         return self
@@ -631,17 +635,17 @@ public func - (attribute: AutoLayoutKitAttribute, value: CGFloat) -> AutoLayoutK
 
 public func == (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
-    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .Equal)
+    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .equal)
 }
 
 public func >= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
-    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .GreaterThanOrEqual)
+    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .greaterThanOrEqual)
 }
 
 public func <= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
-    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .LessThanOrEqual)
+    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .lessThanOrEqual)
 }
 
 //////////////////////////////////////////
@@ -670,7 +674,7 @@ extension CGFloat : AutoLayoutKitEdgeItem, AutoLayoutKitAttributeItem
     }
     
     public var autolayoutKit_attribute : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(nil, .NotAnAttribute, self)
+        return AutoLayoutKitAttribute(nil, .notAnAttribute, self)
     }
 }
 
@@ -687,7 +691,7 @@ extension Int : AutoLayoutKitEdgeItem, AutoLayoutKitAttributeItem
     }
     
     public var autolayoutKit_attribute : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(nil, .NotAnAttribute, CGFloat(self))
+        return AutoLayoutKitAttribute(nil, .notAnAttribute, CGFloat(self))
     }
 }
 
@@ -720,7 +724,7 @@ public struct AutoLayoutKitDivider : AutoLayoutKitEdgeItem
 ////////////////////////////////////////////////////////////
 private struct auto_layout_kit
 {
-    static private func updateEdge(edge: AutoLayoutKitAttribute?, value: CGFloat?) -> AutoLayoutKitAttribute?
+    static fileprivate func updateEdge(_ edge: AutoLayoutKitAttribute?, value: CGFloat?) -> AutoLayoutKitAttribute?
     {
         guard var edge = edge else { return nil }
         guard let value = value else { return nil }
@@ -728,7 +732,7 @@ private struct auto_layout_kit
         return edge
     }
     
-    static private func closestCommonAncestor(a: AutoLayoutKitView, b: AutoLayoutKitView) -> AutoLayoutKitView? {
+    static fileprivate func closestCommonAncestor(_ a: AutoLayoutKitView, b: AutoLayoutKitView) -> AutoLayoutKitView? {
         let (aSuper, bSuper) = (a.superview, b.superview)
         
         if a === b { return a }
@@ -746,13 +750,13 @@ private struct auto_layout_kit
                 return ancestor
             }
         }
-        return .None
+        return .none
     }
     
-    static private func ancestors(v: AutoLayoutKitView) -> AnySequence<AutoLayoutKitView> {
-        return AnySequence { () -> AnyGenerator<AutoLayoutKitView> in
+    static fileprivate func ancestors(_ v: AutoLayoutKitView) -> AnySequence<AutoLayoutKitView> {
+        return AnySequence { () -> AnyIterator<AutoLayoutKitView> in
             var view: AutoLayoutKitView? = v
-            return AnyGenerator {
+            return AnyIterator {
                 let current = view
                 view = view?.superview
                 return current
@@ -760,8 +764,8 @@ private struct auto_layout_kit
         }
     }
     
-    static private func makeConstraint(
-        left: AutoLayoutKitAttribute,
+    static fileprivate func makeConstraint(
+        _ left: AutoLayoutKitAttribute,
         right: AutoLayoutKitAttribute,
         relatedBy: NSLayoutRelation) -> AutoLayoutKitConstraint?
     {

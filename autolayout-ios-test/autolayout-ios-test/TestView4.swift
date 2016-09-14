@@ -27,17 +27,17 @@ import UIKit
 
 class TestView4 : TestView
 {
-    private var _views = [UIView]()
-    private let _group = AutoLayoutKitConstraintGroup()
+    fileprivate var _views = [UIView]()
+    fileprivate let _group = AutoLayoutKitConstraintGroup()
     
     override init(frame: CGRect)
     {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.blackColor()
+        self.backgroundColor = UIColor.black
         
-        let redView    = self.addColorSubView(UIColor.redColor())
-        let blueView   = self.addColorSubView(UIColor.blueColor())
-        let greenView = self.addColorSubView(UIColor.greenColor())
+        let redView    = self.addColorSubView(UIColor.red)
+        let blueView   = self.addColorSubView(UIColor.blue)
+        let greenView = self.addColorSubView(UIColor.green)
         
         _views.append(redView)
         _views.append(blueView)
@@ -47,15 +47,15 @@ class TestView4 : TestView
         
         let label = UILabel()
         label.text = "Tap Me"
-        label.textColor = UIColor.whiteColor()
-        label.font = UIFont.systemFontOfSize(40)
+        label.textColor = UIColor.white
+        label.font = UIFont.systemFont(ofSize: 40)
         self.addSubview(label)
         self.tk_constraint { make in
             make.center(label)
         }
     }
     
-    private func replaceConstraints()
+    fileprivate func replaceConstraints()
     {
         self.tk_constraint(replace: _group) { make in
             let edge : CGFloat = 20
@@ -81,16 +81,16 @@ class TestView4 : TestView
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let lastView = _views[2]
         _views[2] = _views[1]
         _views[1] = _views[0]
         _views[0] = lastView
         
         replaceConstraints()
-        UIView.animateWithDuration(0.5) {
+        UIView.animate(withDuration: 0.5, animations: {
             self.layoutIfNeeded()
-        }
+        }) 
     }
 }
 

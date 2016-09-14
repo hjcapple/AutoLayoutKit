@@ -29,7 +29,7 @@ class TestView : UIView
 {
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.whiteColor()
+        self.backgroundColor = UIColor.white
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -39,7 +39,7 @@ class TestView : UIView
 
 public extension UIView
 {
-    func addColorSubView(color: UIColor) -> UIView
+    func addColorSubView(_ color: UIColor) -> UIView
     {
         let aView = UIView()
         aView.backgroundColor = color

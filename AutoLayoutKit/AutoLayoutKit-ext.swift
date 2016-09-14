@@ -27,27 +27,27 @@ import Foundation
 public extension AutoLayoutKitView
 {
     var tk_centerX : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(self, .CenterX)
+        return AutoLayoutKitAttribute(self, .centerX)
     }
     
     var tk_centerY : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(self, .CenterY)
+        return AutoLayoutKitAttribute(self, .centerY)
     }
     
     var tk_right : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(self, .Right)
+        return AutoLayoutKitAttribute(self, .right)
     }
     
     var tk_left : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(self, .Left)
+        return AutoLayoutKitAttribute(self, .left)
     }
     
     var tk_top : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(self, .Top)
+        return AutoLayoutKitAttribute(self, .top)
     }
     
     var tk_bottom : AutoLayoutKitAttribute {
-        return AutoLayoutKitAttribute(self, .Bottom)
+        return AutoLayoutKitAttribute(self, .bottom)
     }
 }
 

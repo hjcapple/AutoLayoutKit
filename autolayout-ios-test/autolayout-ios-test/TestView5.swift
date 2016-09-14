@@ -31,32 +31,32 @@ class TestView5Cell : TestView
     {
         super.init(frame: frame)
         
-        let iconView = self.addColorSubView(UIColor.blueColor())
+        let iconView = self.addColorSubView(UIColor.blue)
      
         let titleLabel = UILabel()
-        titleLabel.font = UIFont.systemFontOfSize(16)
+        titleLabel.font = UIFont.systemFont(ofSize: 16)
         titleLabel.text = "Title"
         self.addSubview(titleLabel)
         
         let detailLabel = UILabel()
-        detailLabel.font = UIFont.systemFontOfSize(14)
+        detailLabel.font = UIFont.systemFont(ofSize: 14)
         detailLabel.text = "Detail text"
         self.addSubview(detailLabel)
         
         let longDetalLabel = UILabel()
-        longDetalLabel.font = UIFont.systemFontOfSize(10)
+        longDetalLabel.font = UIFont.systemFont(ofSize: 10)
         longDetalLabel.text = "Long Long detail text"
         self.addSubview(longDetalLabel)
         
         let timeLabel = UILabel()
-        timeLabel.font = UIFont.systemFontOfSize(14)
+        timeLabel.font = UIFont.systemFont(ofSize: 14)
         timeLabel.text = "2 days ago"
         self.addSubview(timeLabel)
         
         self.tk_constraint { make in
             
             make.yPlace(10, iconView, 10)
-            make.width(iconView) == AutoLayoutKitAttribute(iconView, .Height)
+            make.width(iconView) == AutoLayoutKitAttribute(iconView, .height)
             
             make.xPlace(10, iconView, 10, titleLabel, make.wall, timeLabel, 10)
             make.ref(titleLabel).xLeft(detailLabel, longDetalLabel)
@@ -79,7 +79,7 @@ class TestView5 : TestView
     {
         super.init(frame: frame)
         
-        self.backgroundColor = UIColor.blackColor()
+        self.backgroundColor = UIColor.black
         
         let cell = TestView5Cell()
         self.addSubview(cell)

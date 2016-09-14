@@ -31,9 +31,9 @@ class TestView3 : TestView
     {
         super.init(frame: frame)
         
-        let redView    = self.addColorSubView(UIColor.redColor())
-        let blueView   = self.addColorSubView(UIColor.blueColor())
-        let yellowView = self.addColorSubView(UIColor.yellowColor())
+        let redView    = self.addColorSubView(UIColor.red)
+        let blueView   = self.addColorSubView(UIColor.blue)
+        let yellowView = self.addColorSubView(UIColor.yellow)
         
         self.tk_constraint { make in
             make.height(redView, yellowView) == 44
