@@ -24,8 +24,9 @@ SOFTWARE.
 
 import Foundation
 import UIKit
+import AutoLayoutKit
 
-class TestView2 : TestView
+class TestView3 : TestView
 {
     override init(frame: CGRect)
     {
@@ -36,14 +37,9 @@ class TestView2 : TestView
         let yellowView = self.addColorSubView(UIColor.yellow)
         
         self.tk_constraint { make in
-            
-            make.width(redView, blueView, yellowView) == [50, 100, 200]
-            make.height(redView, blueView, yellowView) == 100
-            
-            make.xCenter(redView, blueView, yellowView)
-            make.yCenter(blueView)
-
-            make.yPlace(make.wall, redView, 10, blueView, 10, yellowView, make.wall)
+            make.height(redView, yellowView) == 44
+            make.xEqual(redView, blueView, yellowView)
+            make.yPlace(redView, blueView, yellowView)
         }
     }
     

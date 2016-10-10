@@ -24,6 +24,7 @@ SOFTWARE.
 
 import Foundation
 import UIKit
+import AutoLayoutKit
 
 class TestView5Cell : TestView
 {

@@ -68,7 +68,7 @@ class TestTableViewController : UITableViewController
         super.viewDidLoad()
         self.extendedLayoutIncludesOpaqueBars = true
         
-        self.title = "LayoutKit Test"
+        self.title = "AutoLayoutKit Test"
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: kCellId)
     }
     
