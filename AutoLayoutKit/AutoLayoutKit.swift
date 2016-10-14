@@ -68,9 +68,8 @@ public final class AutoLayoutKitConstraintGroup
 {
     private var _constraints = [AutoLayoutKitConstraint]()
     
-    fileprivate func addConstraints(_ constraint: AutoLayoutKitConstraint)
+    public init()
     {
-        _constraints.append(constraint)
     }
     
     public func uninstall()
@@ -82,8 +81,9 @@ public final class AutoLayoutKitConstraintGroup
         _constraints.removeAll()
     }
     
-    public init()
+    fileprivate func addConstraint(_ constraint: AutoLayoutKitConstraint)
     {
+        _constraints.append(constraint)
     }
 }
 
@@ -139,7 +139,7 @@ public final class AutoLayoutKitMaker
             leftView.translatesAutoresizingMaskIntoConstraints = false
         }
         constraint.view.addConstraint(constraint.constraint)
-        _group.addConstraints(constraint)
+        _group.addConstraint(constraint)
     }
 }
 
@@ -189,7 +189,7 @@ extension AutoLayoutKitMaker
             }
             else
             {
-                lastEdge = auto_layout_kit.updateEdge(lastEdge, value: item.autoLayoutKit_value)
+                lastEdge = updateEdge(lastEdge, value: item.autoLayoutKit_value)
             }
         }
         
@@ -225,7 +225,7 @@ extension AutoLayoutKitMaker
             }
             else
             {
-                lastEdge = auto_layout_kit.updateEdge(lastEdge, value: item.autoLayoutKit_value)
+                lastEdge = updateEdge(lastEdge, value: item.autoLayoutKit_value)
             }
         }
         
@@ -635,17 +635,17 @@ public func - (attribute: AutoLayoutKitAttribute, value: CGFloat) -> AutoLayoutK
 
 public func == (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
-    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .equal)
+    return makeConstraint(left: left, right: right, relatedBy: .equal)
 }
 
 public func >= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
-    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .greaterThanOrEqual)
+    return makeConstraint(left: left, right: right, relatedBy: .greaterThanOrEqual)
 }
 
 public func <= (left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute) -> AutoLayoutKitConstraint?
 {
-    return auto_layout_kit.makeConstraint(left, right: right, relatedBy: .lessThanOrEqual)
+    return makeConstraint(left: left, right: right, relatedBy: .lessThanOrEqual)
 }
 
 //////////////////////////////////////////
@@ -722,77 +722,71 @@ public struct AutoLayoutKitDivider : AutoLayoutKitEdgeItem
 }
 
 ////////////////////////////////////////////////////////////
-private struct auto_layout_kit
+private func updateEdge(_ edge: AutoLayoutKitAttribute?, value: CGFloat?) -> AutoLayoutKitAttribute?
 {
-    static fileprivate func updateEdge(_ edge: AutoLayoutKitAttribute?, value: CGFloat?) -> AutoLayoutKitAttribute?
+    guard var edge = edge else { return nil }
+    guard let value = value else { return nil }
+    edge.constant += value
+    return edge
+}
+
+private func closestCommonAncestor(_ a: AutoLayoutKitView, _ b: AutoLayoutKitView) -> AutoLayoutKitView? {
+    let (aSuper, bSuper) = (a.superview, b.superview)
+    
+    if a === b { return a }
+    
+    if a === bSuper { return a }
+    
+    if b === aSuper { return b }
+    
+    if aSuper === bSuper { return aSuper }
+    
+    let ancestorsOfA = Set(ancestors(a))
+    
+    for ancestor in ancestors(b) {
+        if ancestorsOfA.contains(ancestor) {
+            return ancestor
+        }
+    }
+    return .none
+}
+
+private func ancestors(_ v: AutoLayoutKitView) -> AnySequence<AutoLayoutKitView> {
+    return AnySequence { () -> AnyIterator<AutoLayoutKitView> in
+        var view: AutoLayoutKitView? = v
+        return AnyIterator {
+            let current = view
+            view = view?.superview
+            return current
+        }
+    }
+}
+
+private func makeConstraint(left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute, relatedBy: NSLayoutRelation) -> AutoLayoutKitConstraint?
+{
+    // left.multiplier * left + left.constant == right.multiplier * right + right.constant
+    // => left = (right.multiplier * right) / left.multiplier + (right.constant - left.constant) / left.multiplier
+    guard let leftView = left.view else { return nil }
+    
+    let constraint = NSLayoutConstraint(
+        item: leftView,
+        attribute: left.attribute,
+        relatedBy: relatedBy,
+        toItem: right.view,
+        attribute: right.attribute,
+        multiplier: right.multiplier / left.multiplier,
+        constant: (right.constant - left.constant) / left.multiplier)
+    
+    var view : AutoLayoutKitView!
+    if let rightView = right.view
     {
-        guard var edge = edge else { return nil }
-        guard let value = value else { return nil }
-        edge.constant += value
-        return edge
+        view = closestCommonAncestor(leftView, rightView)
     }
-    
-    static fileprivate func closestCommonAncestor(_ a: AutoLayoutKitView, b: AutoLayoutKitView) -> AutoLayoutKitView? {
-        let (aSuper, bSuper) = (a.superview, b.superview)
-        
-        if a === b { return a }
-        
-        if a === bSuper { return a }
-        
-        if b === aSuper { return b }
-        
-        if aSuper === bSuper { return aSuper }
-        
-        let ancestorsOfA = Set(ancestors(a))
-        
-        for ancestor in ancestors(b) {
-            if ancestorsOfA.contains(ancestor) {
-                return ancestor
-            }
-        }
-        return .none
-    }
-    
-    static fileprivate func ancestors(_ v: AutoLayoutKitView) -> AnySequence<AutoLayoutKitView> {
-        return AnySequence { () -> AnyIterator<AutoLayoutKitView> in
-            var view: AutoLayoutKitView? = v
-            return AnyIterator {
-                let current = view
-                view = view?.superview
-                return current
-            }
-        }
-    }
-    
-    static fileprivate func makeConstraint(
-        _ left: AutoLayoutKitAttribute,
-        right: AutoLayoutKitAttribute,
-        relatedBy: NSLayoutRelation) -> AutoLayoutKitConstraint?
+    else
     {
-        // left.multiplier * left + left.constant == right.multiplier * right + right.constant
-        // => left = (right.multiplier * right) / left.multiplier + (right.constant - left.constant) / left.multiplier
-        guard let leftView = left.view else { return nil }
-        
-        let constraint = NSLayoutConstraint(
-            item: leftView,
-            attribute: left.attribute,
-            relatedBy: relatedBy,
-            toItem: right.view,
-            attribute: right.attribute,
-            multiplier: right.multiplier / left.multiplier,
-            constant: (right.constant - left.constant) / left.multiplier)
-        
-        var view : AutoLayoutKitView!
-        if let rightView = right.view
-        {
-            view = auto_layout_kit.closestCommonAncestor(leftView, b: rightView)
-        }
-        else
-        {
-            view = leftView
-        }
-        
-        return AutoLayoutKitConstraint(view: view, constraint: constraint)
+        view = leftView
     }
+    
+    return AutoLayoutKitConstraint(view: view, constraint: constraint)
 }
 
