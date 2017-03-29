@@ -17,7 +17,7 @@ iOS/macOS 开发中为了适应多种尺寸，会使用 AutoLayout。但 `NSLayo
 
 这些库很不错，只是用起来还是不够方便，它们的 API 每次调用只配置一两个 view 之间的关系，但事实上我们更关心界面的整体布局。比如下面这种简单的界面：
 
-<img alt="example0" src="./images/example0.png"/ width="320">
+<img alt="example0" src="./images/example0.png" width="320">
 
 使用 Cartography 来写，大致写成：
 	
@@ -117,7 +117,7 @@ make.xPlace(20, redView, make.wall, blueView, 20)
 	
 这样就产生下面的布局：
 
-<img alt="example1" src="./images/example1.png"/ width="320">
+<img alt="example1" src="./images/example1.png" width="320">
 
 用 Cartography 的写法，相当于
 	
@@ -161,7 +161,7 @@ make.xPlace(20, redView, make.wall, blueView, 20)
 ```
 redView 和 blueView 被阻隔，因此 redView 跟左边相连，blueView 跟右边相连。产生布局
 
-<img alt="example1" src="./images/example1.png"/ width="320">
+<img alt="example1" src="./images/example1.png" width="320">
 
 而
 
@@ -171,7 +171,7 @@ make.xPlace(make.wall, redView, 20, blueView, 20)
 
 产生整体靠右布局。
 
-<img alt="example2" src="./images/example2.png"/ width="320">
+<img alt="example2" src="./images/example2.png" width="320">
 
 ```Swift
 make.xPlace(20, redView, 20, blueView, make.wall)
@@ -179,7 +179,7 @@ make.xPlace(20, redView, 20, blueView, make.wall)
 
 产生整体靠左布局。
 
-<img alt="example3" src="./images/example3.png"/ width="320">
+<img alt="example3" src="./images/example3.png" width="320">
 
 <a name="edges"></a>
 ### 边距 edges
@@ -196,7 +196,7 @@ make.equal(redView)
 
 bounds 先插入边距，放置 blueView, 再插入边距，再放置 redView, 就产生下面布局：
 
-<img alt="example4" src="./images/example4.png"/ width="320">
+<img alt="example4" src="./images/example4.png" width="320">
 
 也可以分别设置上下左右的边距，之后通过 resetEdges 来还原 edges，比如：
 
