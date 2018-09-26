@@ -491,7 +491,7 @@ extension AutoLayoutKitMaker {
 
 /// /////////////////////////////////////////////////////
 public struct AutoLayoutKitAttribute: AutoLayoutKitAttributeItem {
-    fileprivate var attribute: NSLayoutAttribute
+    fileprivate var attribute: NSLayoutConstraint.Attribute
     fileprivate var view: AutoLayoutKitView?
     fileprivate var constant: CGFloat = 0.0
     fileprivate var multiplier: CGFloat = 1.0
@@ -500,7 +500,7 @@ public struct AutoLayoutKitAttribute: AutoLayoutKitAttributeItem {
         return self
     }
 
-    public init(_ view: AutoLayoutKitView?, _ attribute: NSLayoutAttribute, _ constant: CGFloat = 0.0) {
+    public init(_ view: AutoLayoutKitView?, _ attribute: NSLayoutConstraint.Attribute, _ constant: CGFloat = 0.0) {
         self.attribute = attribute
         self.view = view
         self.constant = constant
@@ -652,7 +652,7 @@ private func ancestors(_ v: AutoLayoutKitView) -> AnySequence<AutoLayoutKitView>
     }
 }
 
-private func makeConstraint(left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute, relatedBy: NSLayoutRelation) -> AutoLayoutKitConstraint? {
+private func makeConstraint(left: AutoLayoutKitAttribute, right: AutoLayoutKitAttribute, relatedBy: NSLayoutConstraint.Relation) -> AutoLayoutKitConstraint? {
     // left.multiplier * left + left.constant == right.multiplier * right + right.constant
     // => left = (right.multiplier * right) / left.multiplier + (right.constant - left.constant) / left.multiplier
     guard let leftView = left.view else { return nil }
